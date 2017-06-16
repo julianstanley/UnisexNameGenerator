@@ -1,6 +1,7 @@
 import urllib.request
 import csv
 import datetime
+import operator
 
 input1 = input("Enter Minimum Prevalence: ")
 
@@ -20,18 +21,26 @@ list = raw_list[1:-1]
 output_list = []
 for entry in list:
     if entry[2] >= input1:
-        output_list.append(entry[1])
+        output_list.append(entry[1:3])
 
-# Sorts the output list alphabetically
-output_list = sorted(output_list)
+# Convert the List of Names to a Dictionary of Names
+dictNames = {}
+for entry in output_list:
+    dictNames[entry[0]] = float(entry[1])
+
+# Convert the dictionary into a sorted list
+output_list = sorted(dictNames.items(), key=operator.itemgetter(1))
+
+print(output_list)
 
 # Write the list to a text file
 file_output_name = datetime.datetime.now().strftime("%Y-%m-%d-%H%M") + " Output"
 file_output = open(file_output_name, 'w')
 for entry in output_list:
-    file_output.write(entry + ", ")
+    file_output.write(entry[0] + ": " + str(entry[1]))
 
 # Write the list to an excel file
 with open(file_output_name+".csv", 'w') as f:
     writer = csv.writer(f)
     writer.writerows(zip(output_list))
+    
